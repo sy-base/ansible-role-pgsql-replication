@@ -1,4 +1,4 @@
 - name: restart postgresql
   service:
-    name: postgresql-{{ pgsql_version }}
+    name: "{{ pgsql_service_name[pgsql_major_version] }}"
     state: restarted

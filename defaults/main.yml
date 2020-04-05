@@ -1,21 +1,20 @@
 pg_port: 5432
 
 pgsqlrep_role: skip
-pgsqlrep_data_path: /var/lib/pgsql/{{ pgsql_version }}/data
 pgsqlrep_user: replicator
-#pgsqlrep_password: '' # Store this in an Ansible vault
+# pgsqlrep_password: '' # Store this in an Ansible vault
 pgsqlrep_wal_level: hot_standby
 pgsqlrep_max_wal_senders: "{{ groups[pgsqlrep_group_name] | length * 2 }}"
 pgsqlrep_wal_keep_segments: 100
 pgsqlrep_synchronous_commit: local
 pgsqlrep_application_name: awx
-bundle_install: False
+bundle_install: no
 
 pgsqlrep_group_name: database_replica
 pgsqlrep_group_name_master: database
 
-pgsqlrep_master_address: "{{ hostvars[groups[pgsqlrep_group_name_master][0]].ansible_default_ipv4.address }}"
-pgsqlrep_replica_address: "{{ groups[pgsqlrep_group_name] | map('extract', hostvars, 'ansible_default_ipv4') | map(attribute='address') | list }}"
+pgsqlrep_master_address: "{{ hostvars[groups[pgsqlrep_group_name_master][0]]['ansible_facts']['default_ipv4']['address'] }}"
+pgsqlrep_replica_address: "{{ groups[pgsqlrep_group_name] | map('extract', hostvars, 'ansible_facts') | map(attribute='default_ipv4') | map(attribute='address') | list }}"
 
 pgsqlrep_postgres_conf_lines:
   - regexp: '#?wal_level = \w+(\s+#.*)'
